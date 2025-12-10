@@ -1,79 +1,112 @@
-# .J.4.R.V.1.5. - Sistema de Orquestração de Ambiente de Desenvolvimento
+# .J.4.R.V.1.5. v7.0.0 - Estrutura Brutalist Purist
 
-**Versão**: 3.8.0 | **Autor**: B0.y_Z4kr14 | **Data**: Dezembro 2024
+## 🏗️ Filosofia e Implementação
+
+Esta versão 7.0.0 do ecossistema **.J.4.R.V.1.5.** adota e implementa rigorosamente a filosofia **Brutalist Purist**, conforme definido na especificação v2.1.1. A estrutura de diretórios é explícita, hierárquica e determinística, com um forte foco em segurança e auditabilidade. Todas as correções de segurança identificadas na análise Popperiana foram aplicadas, resultando em um sistema robusto e transparente.
+
+> "Explícito sobre implícito. Direto sobre abstrato. Transparente sobre mágico."
 
 ---
 
-## 🎯 Visão Geral
+## 📁 Estrutura Canônica v7.0.0
 
-O **.J.4.R.V.1.5.** é um sistema de orquestração de ambiente de desenvolvimento projetado para ser **modular, descentralizado e híbrido**. Ele automatiza a configuração, validação e manutenção de ambientes de desenvolvimento complexos, com foco em segurança, automação e integração.
+A estrutura de diretórios é a espinha dorsal do sistema, impondo ordem e previsibilidade. Todos os componentes do ecossistema agora residem sob a raiz `~/.J.4.R.V.1.5/`.
 
-## ✨ Princípios de Design
-
-- **Modularidade**: Cada componente é um agente atômico e independente.
-- **Descentralização**: Não há um ponto único de falha.
-- **Segurança**: Gestão de credenciais e chaves com criptografia forte.
-- **Automação**: Scripts para validação, limpeza e manutenção.
-- **Integração**: Suporte para múltiplas IDEs, LLMs e serviços.
-
-## 🚀 Primeiros Passos: Guia Rápido
-
-| Passo | Ação | Comando |
-| :--- | :--- | :--- |
-| 1. 📂 | Clone o repositório | `git clone https://github.com/B0yZ4kr14/J4RV15.git` |
-| 2. 🔑 | Prepare suas credenciais | `mv id_ed25519* .env.J.4.R.V.1.5 J4RV15/config/` |
-| 3. 🛠️ | Execute o instalador | `cd J4RV15 && python3 j4rv15_installer.py --auto` |
-| 4. ✨ | Comece a usar! | `j4 help` |
-
-### 🎮 Experimente Agora! (Sem Instalação)
-
-Quer testar o `.J.4.R.V.1.5.` sem instalar nada? Acesse nosso playground interativo e comece a usar em segundos:
-
-[▶️ Iniciar Playground Interativo](https://www.katacoda.com/your-scenario)
-
-## 🤖 Ecossistema de Agentes Atômicos
-
-| Agente | Responsabilidade |
-| :--- | :--- |
-| **SystemDetectorAgent** | Coleta inventário de hardware, software e rede. |
-| **SecurityAgent** | Gerencia o ciclo de vida de credenciais e chaves. |
-| **LLMManagerAgent** | Gerencia o ciclo de vida de modelos de linguagem. |
-| **EnvironmentValidatorAgent** | Valida dependências e configurações. |
-| **MonitoringAgent** | Realiza verificações de saúde nos serviços. |
-| **ConfigurationAgent** | Gerencia a configuração dinâmica do sistema. |
-
-## ⚙️ Fluxo de Trabalho do ConfigurationAgent
-
-```mermaid
-graph TD
-    A[Início] --> B{j4 config [comando]};
-    B --> C{Comando é \'get\'}?;
-    C -- Sim --> D[Chama ConfigurationAgent.get(key)];
-    D --> E{Arquivo de Configuração Existe?};
-    E -- Sim --> F[Lê YAML/JSON/INI];
-    F --> G[Retorna Valor];
-    E -- Não --> H[Retorna Nulo];
-    C -- Não --> I{Comando é \'set\'}?;
-    I -- Sim --> J[Chama ConfigurationAgent.set(key, value)];
-    J --> K{Arquivo de Configuração Existe?};
-    K -- Sim --> L[Lê YAML/JSON/INI];
-    L --> M[Atualiza/Adiciona Valor];
-    M --> N[Salva Arquivo];
-    N --> O[Retorna Status de Sucesso];
-    K -- Não --> P[Cria Novo Dicionário de Configuração];
-    P --> M;
-    I -- Não --> Q[Comando Inválido];
-    Q --> R[Retorna Mensagem de Erro];
-    G --> S[Fim];
-    H --> S;
-    O --> S;
-    R --> S;
+```
+~/.J.4.R.V.1.5/                      # Raiz do sistema (com pontos)
+├── 00_.local/                       # Dados locais (XDG-Style)
+├── 00_logs/                         # Logs e trilhas de auditoria
+├── 01_saas_foundry/                 # Código-fonte, projetos e ferramentas
+│   └── tools/                       # Scripts e agentes do .J.4.R.V.1.5.
+├── 10_configs/                      # Arquivos de configuração de aplicações
+├── 20_workspace/                    # Espaço de trabalho para projetos ativos
+├── 30_knowledge/                    # Base de conhecimento e documentação
+├── 40_infrastructure/               # Código de Infraestrutura como Código (IaC)
+├── 50_templates/                    # Templates de código, configs e docs
+├── 60_secrets/                      # Diretório seguro para todos os segredos (permissão 0700)
+│   ├── .password-store/             # Raiz do 'pass' (Unix Password Store)
+│   ├── .ssh/                        # Chaves SSH (0700)
+│   ├── .gpg/                        # Chaves GPG (0700)
+│   └── .env                         # Arquivo .env principal (0600)
+├── 70_media/                        # Arquivos de mídia
+├── 80_bin/                          # Binários e executáveis customizados
+├── 90_tmp/                          # Arquivos temporários
+└── 99_archive/                      # Arquivos e backups
 ```
 
-## 🤝 Contribuição
+---
 
-Contribuições são bem-vindas! Por favor, leia o arquivo `CONTRIBUTING.md` para mais detalhes.
+## 🔐 Gestão de Segredos com `pass` na Estrutura Brutalist
 
-## 📜 Licença
+A versão 7.0.0 integra o **SecretManagerAgent** e o **Unix Password Store (`pass`)** diretamente na estrutura Brutalist, garantindo uma gestão de segredos centralizada, segura e auditável.
 
-Este projeto está licenciado sob a Licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+- **Localização Central**: O cofre do `pass` (`~/.password-store`) é inicializado dentro do diretório seguro `~/.J.4.R.V.1.5/60_secrets/`. Isso garante que todos os segredos, gerenciados ou não pelo `pass`, estejam contidos na mesma estrutura segura e auditável.
+- **Permissões Rigorosas**: O diretório `60_secrets/` e todos os seus subdiretórios (incluindo `.password-store/`) são mantidos com permissão `0700`, enquanto arquivos de segredos individuais são `0600`. O `umask 077` é aplicado globalmente pelo script de instalação para garantir a criação segura de novos arquivos.
+- **SecretManagerAgent**: O agente foi atualizado para operar sobre o cofre do `pass` localizado em `~/.J.4.R.V.1.5/60_secrets/.password-store/`, abstraindo as operações de `store`, `retrieve`, `list`, `delete` e `rotate`.
+- **Auditoria**: O script `j4rv15_audit.sh` foi aprimorado para validar a estrutura Brutalist, verificar as permissões do diretório `60_secrets/` e auditar o uso do `pass`.
+
+---
+
+## 🚀 Instalação e Configuração
+
+O processo de instalação foi simplificado e automatizado através do script `install.sh`.
+
+```bash
+# 1. Conceder permissão de execução
+chmod +x install.sh
+
+# 2. Executar o instalador
+./install.sh
+```
+
+O script irá:
+1.  Instalar dependências Python (`rich`, `psutil`).
+2.  Criar a estrutura de diretórios Brutalist completa em `~/.J.4.R.V.1.5/`.
+3.  Copiar as funções Fish para `~/.config/fish/conf.d/j4rv15.fish`.
+4.  Instalar o serviço de monitoramento do systemd em `~/.config/systemd/user/`.
+5.  Validar a instalação e as permissões.
+
+Após a instalação, é necessário inicializar o `pass`:
+
+```fish
+# 1. Identifique seu GPG ID
+gpg --list-secret-keys --keyid-format LONG
+
+# 2. Inicialize o pass DENTRO do diretório de segredos
+pass init --path ~/.J.4.R.V.1.5/60_secrets/.password-store <SEU_GPG_ID>
+```
+
+---
+
+## 🐟 Comandos Fish
+
+Um conjunto de funções `fish` está disponível para navegação e gerenciamento rápidos:
+
+- **Navegação**: `j4`, `j4logs`, `j4saas`, `j4configs`, `j4secrets`, etc.
+- **Status e Validação**: `j4status`, `j4tree`, `j4validate`.
+- **Gestão de Segredos**: `j4secrets-init`, `j4env`.
+- **Backup**: `j4backup`, `j4restore`.
+- **Ajuda**: `j4help` para ver todos os comandos.
+
+Para carregar os comandos, execute: `source ~/.config/fish/conf.d/j4rv15.fish`
+
+---
+
+## 🛡️ Destaques de Segurança (Análise Popperiana)
+
+- **Prevenção de TOCTOU**: Uso de file descriptors e locks atômicos para evitar race conditions.
+- **Prevenção de Path Traversal**: Validação rigorosa de caminhos para garantir que as operações ocorram dentro da raiz `~/.J.4.R.V.1.5/`.
+- **Operações Atômicas**: Todas as escritas de arquivos críticos são feitas de forma atômica (escrita em arquivo temporário e `rename`).
+- **Permissões Seguras**: `umask 077` global, `60_secrets/` com `0700` e arquivos de segredos com `0600`.
+- **Hardening de Systemd**: O serviço `j4rv15.service` possui um score de segurança aprimorado com diretivas como `NoNewPrivileges`, `ProtectSystem=strict` e `ProtectHome=read-only`.
+
+---
+
+## 📦 Conteúdo do Repositório
+
+- **`README.md`**: Este documento.
+- **`install.sh`**: Script de instalação automatizado.
+- **`docs/`**: Documentação aprimorada, incluindo `SECRET_MANAGER_AGENT.md` e `PASS_MIGRATION_TUTORIAL.md` adaptados para a v7.0.0.
+- **`scripts/`**: Contém o `j4rv15_brutalist.py` (core da estrutura), `secret_manager_agent.py` e `j4rv15_audit.sh`.
+- **`fish/`**: Funções e aliases para o shell Fish.
+- **`systemd/`**: Definição do serviço de monitoramento.

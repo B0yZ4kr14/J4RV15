@@ -1,83 +1,129 @@
-# Documentação Completa do Agente Gestor de Secrets .J.4.R.V.1.5.
+# SecretManagerAgent v7.0.0 - Documentação Técnica
 
-## 1. Visão Geral e Filosofia
+## 1. Visão Geral e Integração com a Estrutura Brutalist
 
-O **Agente Gestor de Secrets** é um componente central do ecossistema `.J.4.R.V.1.5.`, projetado para ser a autoridade máxima na gestão, auditoria e segurança de todos os segredos do sistema. Sua filosofia é baseada nos princípios de **segurança por padrão**, **mínimo privilégio** e **automação auditável**.
+O **SecretManagerAgent** é o sétimo agente atômico do ecossistema **.J.4.R.V.1.5.** e serve como a interface programática para a gestão segura de segredos. Na versão 7.0.0, o agente foi totalmente adaptado para operar dentro da **Estrutura Brutalist Purist**, utilizando o **Unix Password Store (`pass`)** como backend de armazenamento seguro.
 
-Este agente opera sob a premissa de que a gestão de segredos deve ser centralizada, padronizada e integrada a um backend criptográfico robusto, neste caso, o **GnuPG** através da interface do **`pass`** (passwordstore.org).
-
-## 2. Arquitetura e Responsabilidades
-
-O agente é responsável por um conjunto de tarefas críticas que garantem a integridade e a segurança do diretório canônico de segredos: `~/.J.4.R.V.1.5/60_secrets`.
-
-### Responsabilidades Principais
-
-| Responsabilidade | Descrição |
-| :--- | :--- |
-| **Auditoria Completa** | Realiza uma varredura completa da árvore de diretórios `60_secrets`, verificando a estrutura, permissões e consistência dos arquivos. |
-| **Normalização de Permissões** | Garante que todos os diretórios e arquivos dentro da árvore de segredos sigam uma política de permissões estrita (ex: `700` para diretórios, `600` para arquivos). |
-| **Detecção de Inconsistências** | Identifica segredos órfãos, formatos de arquivo inesperados, permissões incorretas e outras anomalias. |
-| **Migração para `pass`** | Orquestra a migração completa de segredos de formatos legados (`.env`, `.passwords`, `.tokens`) para o cofre do `pass`. |
-| **Geração de Scripts POSIX** | Produz scripts de auditoria e diagnóstico que são seguros, não destrutivos e compatíveis com `/bin/sh`. |
-| **Integração com GPG** | Garante que o `pass` esteja corretamente configurado para usar as chaves GPG do usuário, localizadas em `~/.gnupg`. |
-
-## 3. Estrutura do Diretório de Segredos
-
-O agente opera exclusivamente dentro da seguinte estrutura de diretórios, considerada canônica:
-
-```
-~/.J.4.R.V.1.5/60_secrets/
-├── .certificates/   # Certificados SSL/TLS
-├── .env             # Arquivo de ambiente principal (legado, a ser migrado)
-├── .env.d/          # Diretório para múltiplos arquivos .env (legado)
-├── .gpg/            # Chaves GPG (link simbólico para ~/.gnupg)
-├── .keys/           # Chaves de API e outros tokens brutos (legado)
-├── .passwords/      # Senhas em texto plano (legado, crítico para migração)
-├── .tokens/         # Tokens de autenticação (legado)
-└── .ssh/            # Chaves SSH (link simbólico para ~/.ssh)
-```
-
-> **Nota Importante**: O uso de KeepassXC está obsoleto e foi completamente removido do ecossistema. Nenhuma referência a ele deve ser feita.
-
-## 4. Interação com o Ambiente do Usuário
-
-O agente é projetado para operar em um ambiente de usuário específico, caracterizado por:
-
-- **Shell**: `fish`
-- **Inicialização do Ambiente Gráfico**: Via TTY, sem gerenciador de login gráfico.
-- **Ambientes Gráficos Suportados**: Hyprland (Wayland), XFCE4 (X11), GNOME (Wayland/X11).
-
-O agente deve ser capaz de detectar o ambiente em execução para fornecer instruções e scripts compatíveis.
-
-## 5. Fluxo de Migração para `pass`
-
-O processo de migração é uma das responsabilidades mais críticas do agente. Ele segue um fluxo de trabalho estruturado para garantir uma transição segura e completa.
-
-1.  **Instalação e Configuração**: O agente garante que `pass` e `gnupg` estejam instalados e que o `pass` seja inicializado com a chave GPG correta do usuário.
-2.  **Vinculação de Chaves**: O diretório `~/.J.4.R.V.1.5/60_secrets/.gpg` é tratado como um link simbólico para `~/.gnupg`, garantindo que o sistema GPG do usuário seja a única fonte de verdade.
-3.  **Importação de Segredos**: O agente lê os segredos dos diretórios legados (`.env`, `.passwords`, `.tokens`) e os importa para o cofre do `pass`, utilizando uma hierarquia de nomenclatura padronizada.
-    - Exemplo: Uma chave de API da OpenAI em `.keys/openai.key` seria migrada para `pass J4RV15/api/openai`.
-4.  **Verificação e Limpeza**: Após a migração, o agente verifica se todos os segredos foram importados corretamente e, em seguida, move os arquivos legados para um diretório de backup (`.migrated_secrets/`) antes de sugerir sua remoção segura.
-
-## 6. Scripts de Auditoria
-
-Quando solicitado, o agente gera um script de auditoria POSIX (`/bin/sh`) que realiza uma análise não destrutiva do sistema. O script gera um relatório detalhado em um arquivo de log com timestamp, como `~/J4RV15_audit_20260101_153344.txt`.
-
-### Informações Coletadas pelo Script de Auditoria
-
-- **Hardware**: CPU, GPU, RAM, Discos.
-- **Pacotes**: Lista de pacotes instalados (específico do Arch Linux).
-- **Serviços**: Status dos principais serviços (`systemd`).
-- **Estrutura de Segredos**: Validação da árvore de diretórios `60_secrets`.
-- **Permissões**: Verificação das permissões de arquivos e diretórios sensíveis.
-- **Inconsistências**: Detecção de arquivos inesperados ou órfãos.
-- **Ambiente Gráfico**: Identificação do ambiente gráfico em execução.
-- **Integração GPG**: Verificação da configuração do GPG e do `pass`.
-
-> **Segurança**: O script de auditoria **NUNCA** exibe o conteúdo de nenhum segredo no log ou na saída padrão.
+O agente agora opera exclusivamente sobre o cofre do `pass` localizado em `~/.J.4.R.V.1.5/60_secrets/.password-store/`, garantindo que todas as operações de segredos estejam centralizadas, criptografadas e em conformidade com as permissões rigorosas (`0700`) da estrutura.
 
 ---
 
-**Versão**: 5.0.0  
-**Data**: Dezembro 2024  
-**Autor**: B0.y_Z4kr14
+## 2. Arquitetura e Funcionalidades
+
+O agente mantém sua interface `run_task(task: dict)`, mas as operações internas foram refatoradas para interagir com o `pass` através de comandos de subprocesso.
+
+### 2.1. Interface de Tarefas
+
+O agente responde a um dicionário de tarefas com a seguinte estrutura:
+
+```json
+{
+    "action": "<operação>",
+    "name": "<nome_do_segredo>",
+    "value": "<valor_do_segredo>", // Opcional
+    "options": {} // Opcional
+}
+```
+
+### 2.2. Operações Suportadas
+
+| Ação | Descrição | Exemplo de `name` | `value` | `options` |
+| :--- | :--- | :--- | :--- | :--- |
+| `store` | Armazena um novo segredo ou atualiza um existente. | `J4RV15/api/openai` | Obrigatório | `{"multiline": true}` |
+| `retrieve` | Recupera o valor de um segredo. | `J4RV15/api/openai` | Ignorado | `{"clip": true}` (copia para clipboard) |
+| `list` | Lista segredos dentro de uma hierarquia. | `J4RV15/api` | Ignorado | `{}` |
+| `delete` | Remove um segredo de forma segura. | `J4RV15/api/openai` | Ignorado | `{"force": true}` |
+| `generate` | Gera uma nova senha segura. | `J4RV15/services/database` | Ignorado | `{"length": 32, "no-symbols": false}` |
+
+### 2.3. Exemplo de Implementação Python (`secret_manager_agent.py`)
+
+O código do agente foi adaptado para definir o `PASSWORD_STORE_DIR` e executar comandos `pass`.
+
+```python
+import subprocess
+import os
+
+class SecretManagerAgent:
+    def __init__(self):
+        self.password_store_dir = os.path.expanduser("~/.J.4.R.V.1.5/60_secrets/.password-store")
+        self.env = os.environ.copy()
+        self.env["PASSWORD_STORE_DIR"] = self.password_store_dir
+
+    def _run_pass_command(self, args: list[str]) -> dict:
+        try:
+            process = subprocess.run(
+                ["pass"] + args,
+                capture_output=True,
+                text=True,
+                check=True,
+                env=self.env
+            )
+            return {"status": "success", "output": process.stdout.strip()}
+        except subprocess.CalledProcessError as e:
+            return {"status": "error", "message": e.stderr.strip()}
+
+    def run_task(self, task: dict) -> dict:
+        action = task.get("action")
+        name = task.get("name")
+
+        if action == "retrieve":
+            return self._run_pass_command([name])
+        
+        # ... outras ações ...
+```
+
+---
+
+## 3. Integração com o Script de Auditoria (`j4rv15_audit.sh`)
+
+O `SecretManagerAgent` é uma peça fundamental no ciclo de auditoria. O script `j4rv15_audit.sh` foi aprimorado para:
+
+1.  **Verificar a Existência do Agente**: Confirma que `secret_manager_agent.py` existe em `~/.J.4.R.V.1.5/01_saas_foundry/tools/`.
+2.  **Validar a Configuração do `pass`**: Executa verificações para garantir que o `PASSWORD_STORE_DIR` está configurado corretamente e que o cofre está inicializado.
+3.  **Auditar Acessos (Futuro)**: A integração com os logs do `pass` (se configurado) permitirá ao agente analisar padrões de acesso e detectar anomalias, como um segredo sendo acessado com muita frequência ou de locais inesperados.
+
+### Exemplo de Verificação no Script de Auditoria:
+
+```bash
+# ... dentro de j4rv15_audit.sh ...
+
+PASSWORD_STORE_DIR="$HOME/.J.4.R.V.1.5/60_secrets/.password-store"
+
+if [ ! -d "$PASSWORD_STORE_DIR" ]; then
+    echo "{\"status\": \"ERROR\", \"check\": \"pass_store_existence\", \"message\": \"Diretório do pass não encontrado em $PASSWORD_STORE_DIR\"}"
+fi
+
+if [ ! -f "$PASSWORD_STORE_DIR/.gpg-id" ]; then
+    echo "{\"status\": \"ERROR\", \"check\": \"pass_initialization\", \"message\": \"Cofre do pass não inicializado (arquivo .gpg-id não encontrado)\"}"
+fi
+```
+
+---
+
+## 4. Casos de Uso na Estrutura Brutalist
+
+### 4.1. Configuração de um Novo Serviço
+
+1.  **Orquestrador** solicita ao **SecretManagerAgent** a geração de uma nova senha para um banco de dados.
+    - `task = {"action": "generate", "name": "J4RV15/database/postgres", "options": {"length": 24}}`
+2.  O **SecretManagerAgent** executa `pass generate J4RV15/database/postgres 24` e armazena a senha.
+3.  O **Orquestrador** solicita ao **ConfigurationAgent** que crie um arquivo de configuração para o serviço, requisitando a senha ao **SecretManagerAgent**.
+    - `db_password = secret_agent.run_task({"action": "retrieve", "name": "J4RV15/database/postgres"})`
+4.  O **ConfigurationAgent** escreve o arquivo de configuração em `~/.J.4.R.V.1.5/10_configs/apps/postgres.conf` com a senha recuperada.
+
+### 4.2. Rotação de uma Chave de API
+
+1.  Um **Job Agendado** (via `systemd` ou `cron`) invoca o **SecretManagerAgent** com uma tarefa de rotação.
+    - `task = {"action": "rotate", "name": "J4RV15/api/openai"}`
+2.  O **SecretManagerAgent**:
+    a.  Gera uma nova chave (usando `pass generate`).
+    b.  Armazena a chave antiga em `J4RV15/api/openai.old`.
+    c.  Insere a nova chave em `J4RV15/api/openai`.
+    d.  (Opcional) Invoca um webhook ou script para atualizar o serviço externo com a nova chave.
+3.  O agente registra a rotação em `~/.J.4.R.V.1.5/00_logs/audit/secrets.log`.
+
+---
+
+## 5. Conclusão
+
+A versão 7.0.0 do **SecretManagerAgent** solidifica seu papel como o guardião dos segredos do ecossistema **.J.4.R.V.1.5.**. Ao se integrar perfeitamente com a **Estrutura Brutalist Purist** e o **Unix Password Store**, o agente oferece uma solução de gestão de segredos que é ao mesmo tempo robusta, segura, auditável e alinhada com a filosofia de transparência e explicitude do sistema.

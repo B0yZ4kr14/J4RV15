@@ -1,0 +1,35 @@
+[Unit]
+Description=J4RV15 Brutalist Structure Monitor
+After=default.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 %h/.J.4.R.V.1.5/01_saas_foundry/tools/j4rv15_validate.py --monitor
+Restart=on-failure
+RestartSec=300
+
+# Hardening de segurança
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=%h/.J.4.R.V.1.5
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+PrivateDevices=yes
+CapabilityBoundingSet=
+
+# Logging
+StandardOutput=append:%h/.J.4.R.V.1.5/00_logs/monitor.log
+StandardError=append:%h/.J.4.R.V.1.5/00_logs/monitor_error.log
+
+[Install]
+WantedBy=default.target

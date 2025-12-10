@@ -1,27 +1,82 @@
-# Contribuindo para o .J.4.R.V.1.5.
+# Contribuindo para .J.4.R.V.1.5.
 
-Obrigado por considerar contribuir para o projeto .J.4.R.V.1.5.! Este documento fornece diretrizes para contribuições.
+Agradecemos seu interesse em contribuir para o ecossistema **.J.4.R.V.1.5.**! Este documento fornece diretrizes para contribuições.
 
-## Como Contribuir
+---
 
-1. **Fork o repositório** e crie uma branch a partir de `main`.
-2. **Implemente suas mudanças** seguindo os padrões de código do projeto.
-3. **Escreva testes** para suas mudanças, se aplicável.
-4. **Documente** suas mudanças no código e atualize a documentação, se necessário.
-5. **Faça commit** de suas mudanças com mensagens claras e descritivas.
-6. **Abra um Pull Request** descrevendo suas mudanças e o problema que elas resolvem.
+## 🏗️ Filosofia Brutalist Purist
 
-## Padrões de Código
+Todas as contribuições devem seguir a filosofia central do projeto:
 
-- **Python**: Siga a PEP 8 e use `black` para formatação.
-- **Documentação**: Use Markdown para documentos.
-- **Commits**: Use mensagens de commit descritivas e no imperativo (ex: "Adiciona função de validação").
+> "Explícito sobre implícito. Direto sobre abstrato. Transparente sobre mágico."
 
-## Testes
+Isso significa que o código e a documentação devem ser claros, diretos e sem abstrações desnecessárias.
 
-- Execute todos os testes antes de submeter um PR: `pytest`
-- Garanta que a cobertura de código seja >= 85%.
+---
 
-## Código de Conduta
+## 📋 Como Contribuir
 
-Este projeto adere a um código de conduta. Ao participar, você concorda em manter um ambiente respeitoso e colaborativo.
+### 1. Fork e Clone
+
+```bash
+# Fork o repositório no GitHub
+# Clone seu fork
+git clone https://github.com/SEU_USUARIO/J4RV15.git
+cd J4RV15
+```
+
+### 2. Crie uma Branch
+
+```bash
+git checkout -b feature/minha-contribuicao
+```
+
+### 3. Faça suas Alterações
+
+- **Código**: Siga o estilo Python PEP 8.
+- **Documentação**: Use Markdown com formatação clara.
+- **Commits**: Mensagens descritivas e concisas.
+
+### 4. Teste suas Alterações
+
+```bash
+# Execute testes (se disponíveis)
+python3 -m pytest
+
+# Valide a estrutura
+./scripts/j4rv15_brutalist.py --validate
+```
+
+### 5. Commit e Push
+
+```bash
+git add .
+git commit -m "Add: descrição clara da mudança"
+git push origin feature/minha-contribuicao
+```
+
+### 6. Abra um Pull Request
+
+Descreva claramente o que foi alterado e por quê.
+
+---
+
+## 🔒 Segurança
+
+- **Nunca** commite segredos (chaves, tokens, senhas).
+- Use o `.gitignore` para excluir arquivos sensíveis.
+- Reporte vulnerabilidades de segurança de forma privada.
+
+---
+
+## 📝 Padrões de Código
+
+- **Python**: PEP 8, type hints quando possível.
+- **Shell**: POSIX-compliant quando possível.
+- **Fish**: Funções claras e bem documentadas.
+
+---
+
+## 🙏 Agradecimentos
+
+Obrigado por ajudar a tornar o **.J.4.R.V.1.5.** melhor!
