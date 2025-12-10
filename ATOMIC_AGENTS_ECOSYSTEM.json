@@ -1,0 +1,202 @@
+{
+  "atomic_agents_ecosystem": {
+    "documentation_version": "3.1.0",
+    "author": "B0.y_Z4kr14 (Refatorado por Manus AI)",
+    "last_update": "2024-12-04",
+    "introduction": "O ecossistema de agentes do .J.4.R.V.1.5. é o coração da sua funcionalidade autônoma e modular. A arquitetura é baseada no Princípio da Responsabilidade Única, onde cada agente é uma unidade atômica e independente, projetada para executar uma tarefa específica e bem definida.",
+    "design_principles": {
+      "atomicity": "Cada agente realiza uma única tarefa lógica (ex: detectar hardware, validar tokens, baixar um modelo).",
+      "independence": "Agentes não dependem diretamente uns dos outros; eles são invocados por um orquestrador.",
+      "reusability": "Um mesmo agente pode ser usado em múltiplos fluxos de trabalho.",
+      "data_driven_communication": "Agentes recebem um contexto como entrada e produzem um resultado estruturado (JSON) como saída."
+    },
+    "agents": [
+      {
+        "module_id": 1,
+        "agent_name": "SystemDetectorAgent",
+        "responsibility": "Coletar um inventário completo e detalhado do hardware, software e ambiente de rede do sistema hospedeiro.",
+        "description": "Realiza uma varredura profunda no sistema para identificar todos os seus componentes e configurações. É o primeiro passo em qualquer instalação ou diagnóstico.",
+        "triggers": ["j4 install", "j4 validate --hardware", "j4 fix", "j4 health check"],
+        "tools": {
+          "python": ["psutil", "platform", "socket", "shutil", "os", "subprocess"],
+          "shell": ["uname", "lsb_release", "lscpu", "nvidia-smi", "speedtest-cli"]
+        },
+        "example_prompt": {
+          "task": {"action": "detect", "target": "all"},
+          "description": "Execute uma detecção completa do sistema, incluindo hardware (CPU, GPU, RAM, disco), sistema operacional (distribuição, kernel), rede (IPs, DNS, velocidade) e ambiente de shell (bash, zsh, fish)."
+        },
+        "expected_output": {
+          "format": "JSON",
+          "example": {
+            "hardware": {
+              "cpu": {"model": "Intel Core i9-12900K", "cores": 16, "threads": 24, "arch": "x86_64"},
+              "gpu": {"model": "NVIDIA GeForce RTX 4090", "vram_gb": 24, "driver": "535.104.05"}
+            }
+          }
+        }
+      },
+      {
+        "module_id": 5,
+        "agent_name": "SecurityAgent",
+        "responsibility": "Gerenciar de forma segura todo o ciclo de vida de credenciais, chaves de API, tokens e chaves criptográficas.",
+        "description": "Lida com a importação, armazenamento, criptografia, rotação e backup de todos os dados sensíveis, garantindo que nunca sejam expostos em texto plano.",
+        "triggers": ["j4 install", "j4 secrets add", "j4 secrets remove", "j4 secrets rotate", "j4 secrets backup", "j4 secrets restore"],
+        "tools": {
+          "python": ["cryptography.fernet", "shutil", "os", "subprocess"],
+          "shell": ["chmod", "gpg --import", "ssh-add", "chown"]
+        },
+        "example_prompt": {
+          "task": {
+            "action": "import_secrets",
+            "source_file": "/path/to/.env.J.4.R.V.1.5",
+            "master_key": "your-super-secret-master-key"
+          },
+          "description": "Leia o arquivo '.env.J.4.R.V.1.5'. Para cada variável, criptografe seu valor usando a chave mestra fornecida e armazene o resultado em um arquivo seguro. Importe as chaves SSH para '~/.ssh/' e as chaves GPG para o chaveiro GPG."
+        },
+        "expected_output": {
+          "format": "JSON",
+          "example": {
+            "status": "SUCCESS",
+            "imported_secrets": ["ANTHROPIC_API_KEY", "OPENAI_API_KEY"],
+            "imported_ssh_keys": ["id_ed25519", "id_ed25519.pub"],
+            "imported_gpg_keys": 1
+          }
+        },
+        "security_details": {
+          "title": "Gerenciamento Detalhado de Chaves SSH e Tokens de API",
+          "introduction": "O SecurityAgent emprega uma abordagem de defesa em profundidade para proteger dados sensíveis, combinando criptografia forte, permissões de arquivo restritivas e isolamento de segredos.",
+          "ssh_key_management": {
+            "title": "Gerenciamento de Chaves SSH (id_ed25519, id_ed25519.pub)",
+            "workflow": [
+              {
+                "step": 1,
+                "action": "Cópia Segura",
+                "description": "Ao receber os caminhos para 'id_ed25519' e 'id_ed25519.pub', o agente primeiro os copia para o diretório de segredos isolado: '~/.J.4.R.V.1.5/60_secrets/ssh/'.",
+                "code_example": "shutil.copy(source_path, '~/.J.4.R.V.1.5/60_secrets/ssh/')"
+              },
+              {
+                "step": 2,
+                "action": "Aplicação de Permissões Restritivas",
+                "description": "Imediatamente após a cópia, o agente aplica as permissões de arquivo mais restritivas possíveis para evitar acesso não autorizado.",
+                "code_example": "os.chmod('~/.J.4.R.V.1.5/60_secrets/ssh/id_ed25519', 0o600)"
+              },
+              {
+                "step": 3,
+                "action": "Criação de Link Simbólico",
+                "description": "Para tornar a chave utilizável pelo sistema (ex: git, ssh) sem expor o local original, um link simbólico é criado em '~/.ssh/'.",
+                "code_example": "os.symlink('~/.J.4.R.V.1.5/60_secrets/ssh/id_ed25519', '~/.ssh/id_ed25519')"
+              },
+              {
+                "step": 4,
+                "action": "Adição ao SSH Agent",
+                "description": "Para conveniência, o agente pode adicionar a chave ao ssh-agent em execução.",
+                "code_example": "subprocess.run(['ssh-add', '~/.J.4.R.V.1.5/60_secrets/ssh/id_ed25519'])"
+              }
+            ]
+          },
+          "api_token_management": {
+            "title": "Gerenciamento de Tokens de API e Credenciais",
+            "workflow": [
+              {
+                "step": 1,
+                "action": "Geração da Chave Mestra",
+                "description": "Uma chave de criptografia mestra (master key) é gerada usando Fernet (AES-256-GCM). Esta chave NUNCA é armazenada em disco e deve ser fornecida em tempo de execução ou via variável de ambiente segura.",
+                "code_example": "from cryptography.fernet import Fernet; master_key = Fernet.generate_key()"
+              },
+              {
+                "step": 2,
+                "action": "Leitura e Criptografia",
+                "description": "O agente lê o arquivo '.env.J.4.R.V.1.5' linha por linha. Para cada linha 'KEY=VALUE', o 'VALUE' é criptografado usando a chave mestra.",
+                "code_example": "encrypted_value = cipher_suite.encrypt(value.encode())"
+              },
+              {
+                "step": 3,
+                "action": "Armazenamento Seguro",
+                "description": "Os pares (chave, valor_criptografado) são armazenados em um arquivo dentro do cofre de segredos, por exemplo, '~/.J.4.R.V.1.5/60_secrets/api_keys/env.encrypted'.",
+                "code_example": "with open(encrypted_env_path, 'ab') as f: f.write(f'{key}:{encrypted_value.decode()}'.encode())"
+              },
+              {
+                "step": 4,
+                "action": "Descriptografia em Memória",
+                "description": "Quando um serviço precisa de uma credencial, o SecurityAgent lê o arquivo criptografado, encontra a chave correspondente, e descriptografa o valor diretamente em memória.",
+                "code_example": "decrypted_value = cipher_suite.decrypt(encrypted_value.encode()).decode()"
+              }
+            ]
+          }
+        },
+        "python_implementation": {
+          "filename": "security_agent.py",
+          "description": "Implementação completa do SecurityAgent em Python com métodos para importar chaves SSH, criptografar tokens de API, rotacionar segredos e fazer backup.",
+          "key_methods": [
+            {
+              "method": "import_ssh_keys(source_private_key, source_public_key)",
+              "description": "Implementa os 4 passos de gerenciamento de chaves SSH: cópia segura, aplicação de permissões, criação de symlinks e adição ao ssh-agent.",
+              "returns": "Dict com status e lista de chaves importadas"
+            },
+            {
+              "method": "import_api_tokens(source_env_file)",
+              "description": "Lê o arquivo .env.J.4.R.V.1.5, criptografa cada token com Fernet e armazena em env.encrypted.",
+              "returns": "Dict com status e lista de tokens criptografados"
+            },
+            {
+              "method": "get_secret(key)",
+              "description": "Descriptografa um segredo específico em memória e o retorna ao chamador.",
+              "returns": "String com o valor descriptografado"
+            },
+            {
+              "method": "rotate_secrets(keys_to_rotate)",
+              "description": "Gera uma nova chave mestra e re-criptografa todos os segredos (ou apenas os especificados) com a nova chave.",
+              "returns": "Dict com status e lista de chaves rotacionadas"
+            },
+            {
+              "method": "backup_secrets(backup_dir)",
+              "description": "Cria um backup criptografado de todos os segredos usando tar e openssl.",
+              "returns": "Dict com status e caminho do arquivo de backup"
+            }
+          ],
+          "usage_example": {
+            "description": "Como usar o SecurityAgent em um fluxo de trabalho",
+            "code_snippet": "agent = SecurityAgent()\ntask = {\n    'action': 'import_secrets',\n    'source_file': '/path/to/.env.J.4.R.V.1.5',\n    'ssh_private_key': '/path/to/id_ed25519',\n    'ssh_public_key': '/path/to/id_ed25519.pub'\n}\nresults = agent.execute(task)\nprint(json.dumps(results, indent=2))"
+          }
+        }
+      }
+    ],
+    "workflow_diagram": {
+      "title": "Fluxo de Trabalho: Interação entre SystemDetectorAgent, SecurityAgent e Orquestrador",
+      "description": "Este diagrama ilustra como os agentes atômicos interagem durante um fluxo de trabalho de instalação completa do .J.4.R.V.1.5.",
+      "mermaid_code": "graph TD\n    A['Usuário: j4 install --mode hybrid'] --> B['CLI Parser']\n    B --> C['Orquestrador Principal']\n    C --> D['Inicia Workflow: InstallationWorkflow']\n    D --> E['Passo 1: SystemDetectorAgent']\n    E --> E1['Detecta Hardware']\n    E1 --> E2['Detecta SO']\n    E2 --> E3['Detecta Rede']\n    E3 --> E4['Detecta Shell']\n    E4 --> E5{'Retorna Context'}\n    E5 --> F['Passo 2: EnvironmentValidatorAgent']\n    F --> F1['Valida Docker']\n    F1 --> F2['Valida Python']\n    F2 --> F3['Valida Git']\n    F3 --> F4{'Retorna Status'}\n    F4 --> G['Passo 3: SecurityAgent']\n    G --> G1['Importa Chaves SSH']\n    G1 --> G1A['Copia id_ed25519']\n    G1A --> G1B['Aplica chmod 600']\n    G1B --> G1C['Cria Symlink']\n    G1C --> G1D['Adiciona ao SSH Agent']\n    G1D --> G2['Importa Tokens API']\n    G2 --> G2A['Le .env.J.4.R.V.1.5']\n    G2A --> G2B['Criptografa com Fernet']\n    G2B --> G2C['Armazena em env.encrypted']\n    G2C --> G3{'Retorna Status'}\n    G3 --> H['Passo 4: LLMManagerAgent']\n    H --> H1['Detecta Tier de Hardware']\n    H1 --> H2['Seleciona Modelos']\n    H2 --> H3['Baixa Modelos Ollama']\n    H3 --> H4['Gera config.yaml LiteLLM']\n    H4 --> H5{'Retorna Config'}\n    H5 --> I['Passo 5: IDEIntegrationAgent']\n    I --> I1['Localiza IDE Instalada']\n    I1 --> I2['Injeta Configuracao MCP']\n    I2 --> I3['Instala Extensoes']\n    I3 --> I4{'Retorna Status'}\n    I4 --> J['Passo 6: MonitoringAgent']\n    J --> J1['Verifica Saude do Sistema']\n    J1 --> J2['Testa LLM Gateway']\n    J2 --> J3['Testa Conectividade']\n    J3 --> J4{'Retorna Relatorio'}\n    J4 --> K['Orquestrador Agrega Resultados']\n    K --> L['Gera Relatorio Final']\n    L --> M['Retorna ao Usuario: Instalacao Concluida']\n    style A fill:#e1f5ff\n    style M fill:#c8e6c9\n    style G fill:#fff9c4\n    style E fill:#f3e5f5\n    style H fill:#ffe0b2",
+      "workflow_steps": [
+        {
+          "step": 1,
+          "agent": "SystemDetectorAgent",
+          "description": "Coleta informações completas do sistema (hardware, SO, rede, shell). Retorna um contexto estruturado que será usado pelos próximos agentes para tomar decisões informadas."
+        },
+        {
+          "step": 2,
+          "agent": "EnvironmentValidatorAgent",
+          "description": "Valida se todas as dependências necessárias estão presentes e funcionando. Se alguma validação falhar, o fluxo é interrompido com um relatório de erro."
+        },
+        {
+          "step": 3,
+          "agent": "SecurityAgent",
+          "description": "Importa e protege todas as credenciais. Chaves SSH são copiadas e permissões são aplicadas. Tokens de API são criptografados com Fernet e armazenados de forma segura."
+        },
+        {
+          "step": 4,
+          "agent": "LLMManagerAgent",
+          "description": "Com base no hardware detectado no Passo 1, seleciona e baixa os modelos Ollama apropriados. Gera o arquivo de configuração do LiteLLM com base nas credenciais importadas no Passo 3."
+        },
+        {
+          "step": 5,
+          "agent": "IDEIntegrationAgent",
+          "description": "Configura a IDE selecionada pelo usuário, injetando as configurações de MCP e instalando extensões recomendadas."
+        },
+        {
+          "step": 6,
+          "agent": "MonitoringAgent",
+          "description": "Realiza uma verificação de saúde final para garantir que todos os componentes estão operacionais e prontos para uso."
+        }
+      ]
+    }
+  }
+}
