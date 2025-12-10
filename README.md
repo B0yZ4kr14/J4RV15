@@ -1,14 +1,14 @@
-# .J.4.R.V.1.5. v7.0.0 - Estrutura Brutalist Purist
+# .J.4.R.V.1.5. v1.0 - Estrutura Core
 
-## 🏗️ Filosofia e Implementação
+## 🏗️ Arquitetura e Implementação
 
-Esta versão 7.0.0 do ecossistema **.J.4.R.V.1.5.** adota e implementa rigorosamente a filosofia **Brutalist Purist**, conforme definido na especificação v2.1.1. A estrutura de diretórios é explícita, hierárquica e determinística, com um forte foco em segurança e auditabilidade. Todas as correções de segurança identificadas na análise Popperiana foram aplicadas, resultando em um sistema robusto e transparente.
+Esta versão 1.0 do ecossistema **.J.4.R.V.1.5.** adota e implementa rigorosamente a filosofia **Core**, conforme definido na especificação v2.1.1. A estrutura de diretórios é explícita, hierárquica e determinística, com um forte foco em segurança e auditabilidade. Todas as correções de segurança identificadas na análise Popperiana foram aplicadas, resultando em um sistema robusto e transparente.
 
-> "Explícito sobre implícito. Direto sobre abstrato. Transparente sobre mágico."
+> "A simplicidade é o último grau de sofisticação." - Leonardo da Vinci
 
 ---
 
-## 📁 Estrutura Canônica v7.0.0
+## Estrutura Canônica v1.0
 
 A estrutura de diretórios é a espinha dorsal do sistema, impondo ordem e previsibilidade. Todos os componentes do ecossistema agora residem sob a raiz `~/.J.4.R.V.1.5/`.
 
@@ -36,14 +36,14 @@ A estrutura de diretórios é a espinha dorsal do sistema, impondo ordem e previ
 
 ---
 
-## 🔐 Gestão de Segredos com `pass` na Estrutura Brutalist
+## 🔐 Gestão de Segredos com `pass` na Estrutura
 
-A versão 7.0.0 integra o **SecretManagerAgent** e o **Unix Password Store (`pass`)** diretamente na estrutura Brutalist, garantindo uma gestão de segredos centralizada, segura e auditável.
+A versão 1.0 integra o **SecretManagerAgent** e o **Unix Password Store (`pass`)** diretamente na estrutura, garantindo uma gestão de segredos centralizada, segura e auditável.
 
 - **Localização Central**: O cofre do `pass` (`~/.password-store`) é inicializado dentro do diretório seguro `~/.J.4.R.V.1.5/60_secrets/`. Isso garante que todos os segredos, gerenciados ou não pelo `pass`, estejam contidos na mesma estrutura segura e auditável.
 - **Permissões Rigorosas**: O diretório `60_secrets/` e todos os seus subdiretórios (incluindo `.password-store/`) são mantidos com permissão `0700`, enquanto arquivos de segredos individuais são `0600`. O `umask 077` é aplicado globalmente pelo script de instalação para garantir a criação segura de novos arquivos.
 - **SecretManagerAgent**: O agente foi atualizado para operar sobre o cofre do `pass` localizado em `~/.J.4.R.V.1.5/60_secrets/.password-store/`, abstraindo as operações de `store`, `retrieve`, `list`, `delete` e `rotate`.
-- **Auditoria**: O script `j4rv15_audit.sh` foi aprimorado para validar a estrutura Brutalist, verificar as permissões do diretório `60_secrets/` e auditar o uso do `pass`.
+- **Auditoria**: O script `j4rv15_audit.sh` foi aprimorado para validar a estrutura, verificar as permissões do diretório `60_secrets/` e auditar o uso do `pass`.
 
 ---
 
@@ -106,7 +106,7 @@ Para carregar os comandos, execute: `source ~/.config/fish/conf.d/j4rv15.fish`
 
 - **`README.md`**: Este documento.
 - **`install.sh`**: Script de instalação automatizado.
-- **`docs/`**: Documentação aprimorada, incluindo `SECRET_MANAGER_AGENT.md` e `PASS_MIGRATION_TUTORIAL.md` adaptados para a v7.0.0.
+- **`docs/`**: Documentação aprimorada, incluindo `SECRET_MANAGER_AGENT.md` e `PASS_MIGRATION_TUTORIAL.md` adaptados para a v1.0.
 - **`scripts/`**: Contém o `j4rv15_brutalist.py` (core da estrutura), `secret_manager_agent.py` e `j4rv15_audit.sh`.
 - **`fish/`**: Funções e aliases para o shell Fish.
 - **`systemd/`**: Definição do serviço de monitoramento.

@@ -1,8 +1,8 @@
-# SecretManagerAgent v7.0.0 - Documentação Técnica
+# SecretManagerAgent v1.0 - Documentação Técnica
 
 ## 1. Visão Geral e Integração com a Estrutura Brutalist
 
-O **SecretManagerAgent** é o sétimo agente atômico do ecossistema **.J.4.R.V.1.5.** e serve como a interface programática para a gestão segura de segredos. Na versão 7.0.0, o agente foi totalmente adaptado para operar dentro da **Estrutura Brutalist Purist**, utilizando o **Unix Password Store (`pass`)** como backend de armazenamento seguro.
+O **SecretManagerAgent** é o sétimo agente atômico do ecossistema **.J.4.R.V.1.5.** e serve como a interface programática para a gestão segura de segredos. Na versão 1.0, o agente foi totalmente adaptado para operar dentro da **Estrutura Core**, utilizando o **Unix Password Store (`pass`)** como backend de armazenamento seguro.
 
 O agente agora opera exclusivamente sobre o cofre do `pass` localizado em `~/.J.4.R.V.1.5/60_secrets/.password-store/`, garantindo que todas as operações de segredos estejam centralizadas, criptografadas e em conformidade com as permissões rigorosas (`0700`) da estrutura.
 
@@ -100,7 +100,7 @@ fi
 
 ---
 
-## 4. Casos de Uso na Estrutura Brutalist
+## 4. Casos de Uso na Estrutura
 
 ### 4.1. Configuração de um Novo Serviço
 
@@ -126,4 +126,4 @@ fi
 
 ## 5. Conclusão
 
-A versão 7.0.0 do **SecretManagerAgent** solidifica seu papel como o guardião dos segredos do ecossistema **.J.4.R.V.1.5.**. Ao se integrar perfeitamente com a **Estrutura Brutalist Purist** e o **Unix Password Store**, o agente oferece uma solução de gestão de segredos que é ao mesmo tempo robusta, segura, auditável e alinhada com a filosofia de transparência e explicitude do sistema.
+A versão 1.0 do **SecretManagerAgent** solidifica seu papel como o guardião dos segredos do ecossistema **.J.4.R.V.1.5.**. Ao se integrar perfeitamente com a **Estrutura Core** e o **Unix Password Store**, o agente oferece uma solução de gestão de segredos que é ao mesmo tempo robusta, segura, auditável e alinhada com a filosofia de transparência e explicitude do sistema.

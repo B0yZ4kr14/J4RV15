@@ -1,5 +1,5 @@
-# J4RV15 v7.0.0 - Fish Functions
-# Brutalist Purist Structure - Comandos canônicos
+# J4RV15 v1.0 - Fish Functions
+# Core Structure - Comandos canônicos
 
 # ============================================
 # NAVEGAÇÃO PRINCIPAL
@@ -70,7 +70,7 @@ end
 # ============================================
 
 function j4status
-    echo "🏗️ J4RV15 v7.0.0 - Brutalist Purist Structure"
+    echo "🏗️ J4RV15 v1.0 - Core Structure"
     echo "📍 Root: ~/.J.4.R.V.1.5"
     echo ""
     echo "📊 Estatísticas:"
@@ -190,7 +190,7 @@ end
 
 function j4help
     echo "╔══════════════════════════════════════════════════════════════════════════════╗"
-    echo "║                    J4RV15 v7.0.0 - BRUTALIST PURIST COMMANDS                ║"
+    echo "║                    J4RV15 v1.0 - CORE COMMANDS                ║"
     echo "╚══════════════════════════════════════════════════════════════════════════════╝"
     echo ""
     echo "📁 NAVEGAÇÃO:"
@@ -226,5 +226,5 @@ function j4help
     echo "📖 AJUDA:"
     echo "  j4help      → Mostrar esta ajuda"
     echo ""
-    echo "🧱 Filosofia: "Explícito sobre implícito. Direto sobre abstrato.""
+    echo "🧱 Filosofia: "A simplicidade é o último grau de sofisticação." - Leonardo da Vinci"
 end

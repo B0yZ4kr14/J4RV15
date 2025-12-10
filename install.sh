@@ -1,5 +1,5 @@
 #!/bin/bash
-# J4RV15 v7.0.0 - Brutalist Purist Structure
+# J4RV15 v1.0 - Core Structure
 # Instalador seguindo exatamente o documento v2.1.1
 
 set -euo pipefail
@@ -21,7 +21,7 @@ echo -e "${BLUE}║██   ██║╚════██║██╔══█�
 echo -e "${BLUE}║╚█████╔╝     ██║██║  ██║ ╚████╔╝  ██║███████║     ╚████╔╝    ██║            ║${NC}"
 echo -e "${BLUE}║ ╚════╝      ╚═╝╚═╝  ╚═╝  ╚═══╝   ╚═╝╚══════╝      ╚═══╝     ╚═╝            ║${NC}"
 echo -e "${BLUE}║                                                                              ║${NC}"
-echo -e "${BLUE}║                      Brutalist Purist Structure v7.0.0                      ║${NC}"
+echo -e "${BLUE}║                      Core Structure v1.0                      ║${NC}"
 echo -e "${BLUE}╚══════════════════════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -49,7 +49,7 @@ fi
 echo -e "${BLUE}[1/5] Instalando dependências Python...${NC}"
 pip install --user --quiet rich psutil 2>/dev/null || true
 
-echo -e "${BLUE}[2/5] Criando estrutura Brutalist Purist...${NC}"
+echo -e "${BLUE}[2/5] Criando estrutura Core...${NC}"
 python3 scripts/j4rv15_brutalist.py --init
 
 echo -e "${BLUE}[3/5] Configurando Fish functions...${NC}"
@@ -87,5 +87,5 @@ echo "   j4help      # Ver todos os comandos"
 echo "   j4status    # Ver status"
 echo "   j4tree      # Ver estrutura"
 echo ""
-echo -e "${GREEN}Filosofia Brutalist Purist:${NC}"
-echo ""Explícito sobre implícito. Direto sobre abstrato. Transparente sobre mágico.""
+echo -e "${GREEN}Filosofia Core:${NC}"
+echo ""A simplicidade é o último grau de sofisticação." - Leonardo da Vinci"

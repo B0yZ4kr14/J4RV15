@@ -1,14 +1,14 @@
-# Tutorial de Migração para `pass` na Estrutura Brutalist v7.0.0
+# Tutorial de Migração para `pass` na Estrutura v1.0
 
 ## 1. Introdução
 
-Este tutorial descreve como inicializar e usar o `pass` (Unix Password Store) dentro da nova estrutura **Brutalist Purist** do ecossistema **.J.4.R.V.1.5.**, garantindo que a gestão de segredos esteja centralizada, segura e alinhada com a filosofia do sistema.
+Este tutorial descreve como inicializar e usar o `pass` (Unix Password Store) dentro da nova estrutura **Core** do ecossistema **.J.4.R.V.1.5.**, garantindo que a gestão de segredos esteja centralizada, segura e alinhada com a filosofia do sistema.
 
 ---
 
 ## 2. Pré-requisitos
 
-- **Estrutura v7.0.0 Instalada**: O script `install.sh` deve ter sido executado, criando a estrutura de diretórios em `~/.J.4.R.V.1.5/`.
+- **Estrutura v1.0 Instalada**: O script `install.sh` deve ter sido executado, criando a estrutura de diretórios em `~/.J.4.R.V.1.5/`.
 - **GnuPG Instalado**: O `gpg` deve estar instalado e uma chave GPG pessoal deve ter sido gerada.
 - **`pass` Instalado**: O `pass` deve estar instalado no sistema (`sudo pacman -S pass` ou `sudo apt install pass`).
 
@@ -16,7 +16,7 @@ Este tutorial descreve como inicializar e usar o `pass` (Unix Password Store) de
 
 ## 3. Fase 1: Inicialização do `pass` na Estrutura Correta
 
-A principal mudança na v7.0.0 é a localização do cofre do `pass`. Ele agora reside **dentro** do diretório `60_secrets`.
+A principal mudança na v1.0 é a localização do cofre do `pass`. Ele agora reside **dentro** do diretório `60_secrets`.
 
 ### 3.1. Identificação da Chave GPG
 
@@ -114,7 +114,7 @@ Isso deve exibir a árvore de segredos que você criou, confirmando que eles est
 
 ### 5.2. Verificação com o Script de Auditoria
 
-O script de auditoria da v7.0.0 foi aprimorado para verificar a configuração do `pass`.
+O script de auditoria da v1.0 foi aprimorado para verificar a configuração do `pass`.
 
 ```fish
 # Navegue até o diretório de ferramentas
@@ -133,4 +133,4 @@ O script irá verificar:
 
 ## 6. Conclusão
 
-Ao seguir este tutorial, você terá configurado o `pass` de forma segura e integrada à estrutura Brutalist Purist v7.0.0. Todos os seus segredos estarão centralizados, criptografados com sua chave GPG e gerenciados por uma ferramenta padrão da indústria, ao mesmo tempo que se beneficiam da organização e segurança impostas pelo ecossistema **.J.4.R.V.1.5.**.
+Ao seguir este tutorial, você terá configurado o `pass` de forma segura e integrada à estrutura Core v1.0. Todos os seus segredos estarão centralizados, criptografados com sua chave GPG e gerenciados por uma ferramenta padrão da indústria, ao mesmo tempo que se beneficiam da organização e segurança impostas pelo ecossistema **.J.4.R.V.1.5.**.
