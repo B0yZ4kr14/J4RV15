@@ -4,11 +4,11 @@ Agradecemos seu interesse em contribuir para o ecossistema **.J.4.R.V.1.5.**! Es
 
 ---
 
-## 🏗️ Filosofia Brutalist Purist
+## 🏗️ Filosofia do Projeto
 
 Todas as contribuições devem seguir a filosofia central do projeto:
 
-> "Explícito sobre implícito. Direto sobre abstrato. Transparente sobre mágico."
+> "A simplicidade é o último grau de sofisticação." - Leonardo da Vinci
 
 Isso significa que o código e a documentação devem ser claros, diretos e sem abstrações desnecessárias.
 

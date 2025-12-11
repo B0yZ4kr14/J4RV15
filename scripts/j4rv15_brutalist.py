@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-J4RV15 v7.0.0 - Brutalist Purist Structure
-Implementação exata conforme especificação v2.1.1
+J4RV15 v1.0 - Core Structure
+Implementação conforme especificação v2.1.1
 Com todas as correções de segurança da análise Popperiana
 """
 
@@ -241,7 +241,7 @@ class SecureFileOps:
 
 
 class J4RV15BrutalistSystem:
-    """Sistema J4RV15 seguindo exatamente a especificação Brutalist Purist v2.1.1"""
+    """Sistema J4RV15 seguindo exatamente a especificação Core v2.1.1"""
     
     def __init__(self):
         self.root = J4RV15_ROOT
@@ -461,7 +461,7 @@ if __name__ == "__main__":
     
     def create_fish_functions(self) -> None:
         """Cria funções Fish para comandos j4*"""
-        fish_content = '''# J4RV15 Fish Functions v7.0.0
+        fish_content = '''# J4RV15 Fish Functions v1.0
 # Comandos para navegação e gerenciamento
 
 # Navegação principal
@@ -483,7 +483,7 @@ end
 
 # Comandos de status
 function j4status
-    echo "🏗️ J4RV15 v7.0.0 - Brutalist Purist Structure"
+    echo "🏗️ J4RV15 v1.0 - Core Structure"
     echo "Root: ~/.J.4.R.V.1.5"
     echo ""
     ls -la ~/.J.4.R.V.1.5/
@@ -524,13 +524,13 @@ end
     def create_install_script(self) -> None:
         """Cria script de instalação"""
         install_content = '''#!/bin/bash
-# J4RV15 v7.0.0 Installation Script
-# Brutalist Purist Structure
+# J4RV15 v1.0 Installation Script
+# Core Structure
 
 set -euo pipefail
 IFS=$'\\n\\t'
 
-echo "🏗️ J4RV15 v7.0.0 - Brutalist Purist Structure"
+echo "🏗️ J4RV15 v1.0 - Core Structure"
 echo "Installation Script"
 echo ""
 
@@ -607,7 +607,7 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(
-        description='J4RV15 v7.0.0 - Brutalist Purist Structure'
+        description='J4RV15 v1.0 - Core Structure'
     )
     
     parser.add_argument('--init', action='store_true',
@@ -626,7 +626,7 @@ def main():
     system = J4RV15BrutalistSystem()
     
     if args.init:
-        print("🏗️ J4RV15 v7.0.0 - Brutalist Purist Structure")
+        print("🏗️ J4RV15 v1.0 - Core Structure")
         print(f"Inicializando em {J4RV15_ROOT}")
         print("")
         
