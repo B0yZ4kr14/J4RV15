@@ -92,22 +92,22 @@ class SecretManagerAgent:
         
         normalized_items = []
         
-        for root, dirs, files in os.walk(self.secrets_path):
+        for current_directory, subdirectories, filenames in os.walk(self.secrets_path):
             # Normaliza permissões de diretórios para 700
-            for dir_name in dirs:
-                dir_path = Path(root) / dir_name
-                if not dir_path.is_symlink():
-                    current_perms = stat.S_IMODE(dir_path.stat().st_mode)
-                    if current_perms != 0o700:
-                        dir_path.chmod(0o700)
-                        normalized_items.append(str(dir_path))
+            for directory_name in subdirectories:
+                directory_path = Path(current_directory) / directory_name
+                if not directory_path.is_symlink():
+                    current_permissions = stat.S_IMODE(directory_path.stat().st_mode)
+                    if current_permissions != 0o700:
+                        directory_path.chmod(0o700)
+                        normalized_items.append(str(directory_path))
             
             # Normaliza permissões de arquivos para 600
-            for file_name in files:
-                file_path = Path(root) / file_name
+            for file_name in filenames:
+                file_path = Path(current_directory) / file_name
                 if not file_path.is_symlink():
-                    current_perms = stat.S_IMODE(file_path.stat().st_mode)
-                    if current_perms != 0o600:
+                    current_permissions = stat.S_IMODE(file_path.stat().st_mode)
+                    if current_permissions != 0o600:
                         file_path.chmod(0o600)
                         normalized_items.append(str(file_path))
         
@@ -131,12 +131,12 @@ class SecretManagerAgent:
             "unexpected_items": []
         }
         
-        for root, dirs, files in os.walk(self.secrets_path):
-            for file_name in files:
-                file_path = Path(root) / file_name
+        for current_directory, subdirectories, filenames in os.walk(self.secrets_path):
+            for file_name in filenames:
+                file_path = Path(current_directory) / file_name
                 if not file_path.is_symlink():
-                    current_perms = stat.S_IMODE(file_path.stat().st_mode)
-                    if current_perms != 0o600:
+                    current_permissions = stat.S_IMODE(file_path.stat().st_mode)
+                    if current_permissions != 0o600:
                         inconsistencies["incorrect_permissions"].append(str(file_path))
         
         return {
