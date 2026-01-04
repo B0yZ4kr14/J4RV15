@@ -125,7 +125,7 @@ class SecretManagerAgent:
         )
         
         inconsistencies = {
-            "incorrect_permissions": incorrect_files + incorrect_dirs,
+            "incorrect_permissions": incorrect_dirs + incorrect_files,
             "orphan_files": [],
             "unexpected_items": []
         }
