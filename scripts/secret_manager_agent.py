@@ -12,19 +12,25 @@ Responsabilidades:
 - Gerar relatórios de auditoria
 """
 
-import os
-import stat
 import subprocess
 import json
 from pathlib import Path
 from typing import Dict, List
 
+# Import shared utilities
+from j4rv15_common import (
+    get_secrets_path,
+    normalize_permissions,
+    check_incorrect_permissions,
+    SECURE_DIR_PERMS,
+    SECURE_FILE_PERMS
+)
+
 class SecretManagerAgent:
     def __init__(self, secrets_base_path: str = None):
         """Inicializa o agente com o caminho base para os segredos."""
         if secrets_base_path is None:
-            home = Path.home()
-            self.secrets_path = home / ".J.4.R.V.1.5" / "60_secrets"
+            self.secrets_path = get_secrets_path()
         else:
             self.secrets_path = Path(secrets_base_path)
         
@@ -90,26 +96,12 @@ class SecretManagerAgent:
                 "message": f"Diretório de segredos não encontrado: {self.secrets_path}"
             }
         
-        normalized_items = []
-        
-        for root, dirs, files in os.walk(self.secrets_path):
-            # Normaliza permissões de diretórios para 700
-            for dir_name in dirs:
-                dir_path = Path(root) / dir_name
-                if not dir_path.is_symlink():
-                    current_perms = stat.S_IMODE(dir_path.stat().st_mode)
-                    if current_perms != 0o700:
-                        dir_path.chmod(0o700)
-                        normalized_items.append(str(dir_path))
-            
-            # Normaliza permissões de arquivos para 600
-            for file_name in files:
-                file_path = Path(root) / file_name
-                if not file_path.is_symlink():
-                    current_perms = stat.S_IMODE(file_path.stat().st_mode)
-                    if current_perms != 0o600:
-                        file_path.chmod(0o600)
-                        normalized_items.append(str(file_path))
+        # Use the shared utility function
+        normalized_items = normalize_permissions(
+            self.secrets_path,
+            dir_perms=SECURE_DIR_PERMS,
+            file_perms=SECURE_FILE_PERMS
+        )
         
         return {
             "status": "OK",
@@ -125,19 +117,18 @@ class SecretManagerAgent:
                 "message": f"Diretório de segredos não encontrado: {self.secrets_path}"
             }
         
+        # Use the shared utility function
+        incorrect_dirs, incorrect_files = check_incorrect_permissions(
+            self.secrets_path,
+            expected_dir_perms=SECURE_DIR_PERMS,
+            expected_file_perms=SECURE_FILE_PERMS
+        )
+        
         inconsistencies = {
-            "incorrect_permissions": [],
+            "incorrect_permissions": incorrect_files + incorrect_dirs,
             "orphan_files": [],
             "unexpected_items": []
         }
-        
-        for root, dirs, files in os.walk(self.secrets_path):
-            for file_name in files:
-                file_path = Path(root) / file_name
-                if not file_path.is_symlink():
-                    current_perms = stat.S_IMODE(file_path.stat().st_mode)
-                    if current_perms != 0o600:
-                        inconsistencies["incorrect_permissions"].append(str(file_path))
         
         return {
             "status": "OK",

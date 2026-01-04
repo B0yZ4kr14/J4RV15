@@ -22,6 +22,16 @@ from dataclasses import dataclass
 from enum import Enum
 from contextlib import contextmanager
 
+# Import shared utilities
+from j4rv15_common import (
+    J4RV15_ROOT,
+    SECRETS_DIR_NAME,
+    get_secrets_path,
+    normalize_permissions,
+    SECURE_DIR_PERMS,
+    SECURE_FILE_PERMS
+)
+
 # Configuração de segurança
 UMASK_SECURE = 0o077
 os.umask(UMASK_SECURE)
@@ -37,7 +47,7 @@ logger = logging.getLogger('J4RV15.v7')
 # ESTRUTURA CANÔNICA EXATA DO DOCUMENTO v2.1.1
 # =====================================================
 
-J4RV15_ROOT = Path.home() / ".J.4.R.V.1.5"  # Exatamente assim!
+# J4RV15_ROOT is imported from j4rv15_common
 
 CANONICAL_STRUCTURE = {
     "00_.local": {
@@ -344,28 +354,18 @@ class J4RV15BrutalistSystem:
         """Corrige permissões de segurança"""
         logger.info("Aplicando permissões de segurança")
         
-        # 60_secrets precisa de tratamento especial
-        secrets_dir = self.root / "60_secrets"
+        # Get secrets directory using shared utility
+        secrets_dir = get_secrets_path(self.root)
+        
         if secrets_dir.exists():
-            # Diretório principal: 700
-            secrets_dir.chmod(0o700)
+            # Use shared utility to normalize all permissions
+            normalized_items = normalize_permissions(
+                secrets_dir,
+                dir_perms=SECURE_DIR_PERMS,
+                file_perms=SECURE_FILE_PERMS
+            )
             
-            # Todos os subdirs: 700
-            for subdir in secrets_dir.iterdir():
-                if subdir.is_dir():
-                    subdir.chmod(0o700)
-                    
-                    # Arquivos dentro: 600
-                    for file in subdir.iterdir():
-                        if file.is_file():
-                            file.chmod(0o600)
-            
-            # .env principal: 600
-            env_file = secrets_dir / ".env"
-            if env_file.exists():
-                env_file.chmod(0o600)
-            
-            logger.info("Permissões de 60_secrets aplicadas (700/600)")
+            logger.info(f"Permissões de {SECRETS_DIR_NAME} aplicadas ({oct(SECURE_DIR_PERMS)}/{oct(SECURE_FILE_PERMS)}) - {len(normalized_items)} itens atualizados")
     
     def create_tools_scripts(self) -> None:
         """Cria os scripts principais em 01_saas_foundry/tools/"""
