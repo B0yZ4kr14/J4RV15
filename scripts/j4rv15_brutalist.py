@@ -26,6 +26,11 @@ from contextlib import contextmanager
 UMASK_SECURE = 0o077
 os.umask(UMASK_SECURE)
 
+# Custom exception for security errors
+class SecurityError(Exception):
+    """Raised when a security violation is detected"""
+    pass
+
 # Logging
 logging.basicConfig(
     level=logging.INFO,
@@ -252,7 +257,7 @@ class J4RV15BrutalistSystem:
         self.migrated_items: List[Tuple[Path, Path]] = []
         
     def initialize_structure(self) -> bool:
-        """Cria a estrutura canônica completa"""
+        """Cria a estrutura canônica completa (versão otimizada)"""
         logger.info(f"Inicializando estrutura J4RV15 em {self.root}")
         
         try:
@@ -262,16 +267,18 @@ class J4RV15BrutalistSystem:
             # Criar cada diretório canônico
             for dir_name, config in CANONICAL_STRUCTURE.items():
                 dir_path = self.root / dir_name
+                dir_exists = dir_path.exists()  # Cache do resultado exists()
                 
                 # Criar diretório principal
-                if not dir_path.exists():
+                if not dir_exists:
                     with secure_umask():
                         dir_path.mkdir(mode=config["permissions"], exist_ok=True)
                         self.created_dirs.append(dir_path)
                         logger.info(f"Criado: {dir_name} ({oct(config['permissions'])})")
+                    dir_exists = True  # Atualizar cache
                 
                 # Aplicar permissões corretas mesmo se já existir
-                if dir_path.exists():
+                if dir_exists:
                     current_mode = dir_path.stat().st_mode & 0o777
                     if current_mode != config["permissions"]:
                         dir_path.chmod(config["permissions"])
@@ -341,31 +348,35 @@ class J4RV15BrutalistSystem:
                     self.errors.append(f"Migration failed: {old_name}: {e}")
     
     def fix_permissions(self) -> None:
-        """Corrige permissões de segurança"""
+        """Corrige permissões de segurança de forma eficiente"""
         logger.info("Aplicando permissões de segurança")
         
         # 60_secrets precisa de tratamento especial
         secrets_dir = self.root / "60_secrets"
-        if secrets_dir.exists():
-            # Diretório principal: 700
-            secrets_dir.chmod(0o700)
+        if not secrets_dir.exists():
+            return
             
-            # Todos os subdirs: 700
-            for subdir in secrets_dir.iterdir():
-                if subdir.is_dir():
-                    subdir.chmod(0o700)
-                    
-                    # Arquivos dentro: 600
-                    for file in subdir.iterdir():
-                        if file.is_file():
-                            file.chmod(0o600)
+        # Diretório principal: 700
+        secrets_dir.chmod(0o700)
+        
+        # Usar os.walk() uma única vez para percorrer toda a árvore
+        # Isso é muito mais eficiente do que iterdir() aninhados
+        for root, dirs, files in os.walk(secrets_dir):
+            root_path = Path(root)
             
-            # .env principal: 600
-            env_file = secrets_dir / ".env"
-            if env_file.exists():
-                env_file.chmod(0o600)
+            # Aplicar permissões aos diretórios
+            for dir_name in dirs:
+                dir_path = root_path / dir_name
+                if not dir_path.is_symlink():
+                    dir_path.chmod(0o700)
             
-            logger.info("Permissões de 60_secrets aplicadas (700/600)")
+            # Aplicar permissões aos arquivos
+            for file_name in files:
+                file_path = root_path / file_name
+                if not file_path.is_symlink():
+                    file_path.chmod(0o600)
+        
+        logger.info("Permissões de 60_secrets aplicadas (700/600)")
     
     def create_tools_scripts(self) -> None:
         """Cria os scripts principais em 01_saas_foundry/tools/"""

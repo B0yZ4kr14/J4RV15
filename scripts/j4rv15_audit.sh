@@ -63,7 +63,9 @@ fi
 echo "## 5. PERMISSÕES DE ARQUIVOS SENSÍVEIS" >> "$LOG_FILE"
 echo "---" >> "$LOG_FILE"
 if [ -d "$SECRETS_DIR" ]; then
-    find "$SECRETS_DIR" -type f -exec ls -lh {} \; | awk '{print $1, $9}' >> "$LOG_FILE" 2>&1
+    # Usar find com formato direto é mais eficiente que exec ls
+    find "$SECRETS_DIR" -type f -printf '%M %p\n' 2>/dev/null >> "$LOG_FILE" || \
+        find "$SECRETS_DIR" -type f -exec stat -c '%A %n' {} + >> "$LOG_FILE" 2>&1
     echo "" >> "$LOG_FILE"
 fi
 
@@ -72,8 +74,11 @@ echo "## 6. DETECÇÃO DE INCONSISTÊNCIAS" >> "$LOG_FILE"
 echo "---" >> "$LOG_FILE"
 if [ -d "$SECRETS_DIR" ]; then
     echo "Verificando permissões incorretas (arquivos que não sejam 600 ou 700):" >> "$LOG_FILE"
-    find "$SECRETS_DIR" -type f ! -perm 600 -exec ls -lh {} \; >> "$LOG_FILE" 2>&1
-    find "$SECRETS_DIR" -type d ! -perm 700 -exec ls -lhd {} \; >> "$LOG_FILE" 2>&1
+    # Usar find com -printf ou stat é muito mais eficiente que múltiplos exec ls
+    find "$SECRETS_DIR" -type f ! -perm 600 -printf '%M %p\n' 2>/dev/null >> "$LOG_FILE" || \
+        find "$SECRETS_DIR" -type f ! -perm 600 -exec stat -c '%A %n' {} + >> "$LOG_FILE" 2>&1
+    find "$SECRETS_DIR" -type d ! -perm 700 -printf '%M %p\n' 2>/dev/null >> "$LOG_FILE" || \
+        find "$SECRETS_DIR" -type d ! -perm 700 -exec stat -c '%A %n' {} + >> "$LOG_FILE" 2>&1
     echo "" >> "$LOG_FILE"
 fi
 
