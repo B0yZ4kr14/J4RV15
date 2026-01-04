@@ -81,8 +81,8 @@ def benchmark_scandir_vs_iterdir(test_dir):
     
     # New: scandir with generator
     start = time.perf_counter()
-    with os.scandir(test_dir) as entries:
-        count_new = sum(1 for _ in entries)
+    with os.scandir(test_dir) as scanner:
+        count_new = sum(1 for _ in scanner)
     elapsed_new = time.perf_counter() - start
     
     return elapsed_old, elapsed_new, count_old, count_new
@@ -106,7 +106,7 @@ def main():
             time_old, count_old = benchmark_old_approach(secrets_dir)
             time_new, count_new = benchmark_new_approach(secrets_dir)
             
-            improvement = ((time_old - time_new) / time_old * 100)
+            improvement = ((time_old - time_new) / time_old * 100) if time_old > 0 else 0
             speedup = time_old / time_new if time_new > 0 else float('inf')
             
             print(f"\n1️⃣  Directory Traversal (counting {count_old} files):")

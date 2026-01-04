@@ -14,6 +14,7 @@ Responsabilidades:
 
 import os
 import stat
+import shutil
 import subprocess
 import json
 from pathlib import Path
@@ -157,7 +158,6 @@ class SecretManagerAgent:
         pass_installed = False
         try:
             # Usar shutil.which é mais eficiente que subprocess
-            import shutil
             pass_installed = shutil.which("pass") is not None
         except Exception:
             pass
