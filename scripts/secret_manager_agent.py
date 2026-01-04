@@ -83,7 +83,7 @@ class SecretManagerAgent:
         return audit_results
 
     def _normalize_permissions(self):
-        """Normaliza as permissões de arquivos e diretórios."""
+        """Normaliza as permissões de arquivos e diretórios de forma eficiente."""
         if not self.secrets_path.exists():
             return {
                 "status": "ERROR",
@@ -92,10 +92,13 @@ class SecretManagerAgent:
         
         normalized_items = []
         
+        # Uma única passagem por toda a árvore de diretórios
         for root, dirs, files in os.walk(self.secrets_path):
+            root_path = Path(root)
+            
             # Normaliza permissões de diretórios para 700
             for dir_name in dirs:
-                dir_path = Path(root) / dir_name
+                dir_path = root_path / dir_name
                 if not dir_path.is_symlink():
                     current_perms = stat.S_IMODE(dir_path.stat().st_mode)
                     if current_perms != 0o700:
@@ -104,7 +107,7 @@ class SecretManagerAgent:
             
             # Normaliza permissões de arquivos para 600
             for file_name in files:
-                file_path = Path(root) / file_name
+                file_path = root_path / file_name
                 if not file_path.is_symlink():
                     current_perms = stat.S_IMODE(file_path.stat().st_mode)
                     if current_perms != 0o600:
@@ -118,7 +121,7 @@ class SecretManagerAgent:
         }
 
     def _detect_inconsistencies(self):
-        """Detecta inconsistências na estrutura de segredos."""
+        """Detecta inconsistências na estrutura de segredos de forma eficiente."""
         if not self.secrets_path.exists():
             return {
                 "status": "ERROR",
@@ -131,9 +134,13 @@ class SecretManagerAgent:
             "unexpected_items": []
         }
         
+        # Uma única passagem por toda a árvore
         for root, dirs, files in os.walk(self.secrets_path):
+            root_path = Path(root)
+            
+            # Verificar permissões de arquivos
             for file_name in files:
-                file_path = Path(root) / file_name
+                file_path = root_path / file_name
                 if not file_path.is_symlink():
                     current_perms = stat.S_IMODE(file_path.stat().st_mode)
                     if current_perms != 0o600:
@@ -145,26 +152,33 @@ class SecretManagerAgent:
         }
 
     def _prepare_migration(self):
-        """Prepara o ambiente para migração para pass."""
-        # Verifica se o pass está instalado
+        """Prepara o ambiente para migração para pass (versão otimizada)."""
+        # Cache dos resultados de subprocess para evitar chamadas repetidas
+        pass_installed = False
         try:
-            subprocess.run(["which", "pass"], check=True, capture_output=True)
-            pass_installed = True
-        except subprocess.CalledProcessError:
-            pass_installed = False
+            # Usar shutil.which é mais eficiente que subprocess
+            import shutil
+            pass_installed = shutil.which("pass") is not None
+        except Exception:
+            pass
         
-        # Verifica se o pass está inicializado
+        # Verificar se o pass está inicializado
         pass_store = Path.home() / ".password-store"
         pass_initialized = pass_store.exists()
         
-        # Conta os segredos a serem migrados
+        # Contar os segredos a serem migrados de forma eficiente
         legacy_secrets_count = 0
         legacy_paths = [".passwords", ".tokens", ".keys"]
         
         for legacy_path in legacy_paths:
             path = self.secrets_path / legacy_path
             if path.exists() and path.is_dir():
-                legacy_secrets_count += len(list(path.iterdir()))
+                # Usar scandir() é mais eficiente que iterdir()
+                try:
+                    with os.scandir(path) as entries:
+                        legacy_secrets_count += sum(1 for entry in entries if entry.is_file())
+                except OSError:
+                    pass
         
         return {
             "status": "OK",
