@@ -159,14 +159,14 @@ def secure_umask(umask_value: int = UMASK_SECURE):
 def file_lock(path: Path, exclusive: bool = True):
     """File lock para prevenir race conditions (TOCTOU fix)"""
     lock_file = Path(f"{path}.lock")
-    fd = os.open(str(lock_file), os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+    file_descriptor = os.open(str(lock_file), os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
     try:
         lock_type = fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH
-        fcntl.flock(fd, lock_type)
-        yield fd
+        fcntl.flock(file_descriptor, lock_type)
+        yield file_descriptor
     finally:
-        fcntl.flock(fd, fcntl.LOCK_UN)
-        os.close(fd)
+        fcntl.flock(file_descriptor, fcntl.LOCK_UN)
+        os.close(file_descriptor)
         try:
             lock_file.unlink()
         except:
@@ -594,8 +594,8 @@ EOF
             "timestamp": datetime.now().isoformat(),
             "version": "7.0.0",
             "root": str(self.root),
-            "created_dirs": [str(d) for d in self.created_dirs],
-            "migrated_items": [(str(old), str(new)) for old, new in self.migrated_items],
+            "created_dirs": [str(directory) for directory in self.created_dirs],
+            "migrated_items": [(str(old_path), str(new_path)) for old_path, new_path in self.migrated_items],
             "errors": self.errors,
             "warnings": self.warnings,
             "status": "SUCCESS" if not self.errors else "COMPLETED_WITH_ERRORS"

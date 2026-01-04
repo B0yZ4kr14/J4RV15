@@ -74,18 +74,18 @@ function j4status
     echo "📍 Root: ~/.J.4.R.V.1.5"
     echo ""
     echo "📊 Estatísticas:"
-    set dirs (ls -d ~/.J.4.R.V.1.5/*/ 2>/dev/null | wc -l)
-    set files (find ~/.J.4.R.V.1.5 -type f 2>/dev/null | wc -l)
-    echo "  • Diretórios canônicos: $dirs"
-    echo "  • Total de arquivos: $files"
+    set directory_count (ls -d ~/.J.4.R.V.1.5/*/ 2>/dev/null | wc -l)
+    set file_count (find ~/.J.4.R.V.1.5 -type f 2>/dev/null | wc -l)
+    echo "  • Diretórios canônicos: $directory_count"
+    echo "  • Total de arquivos: $file_count"
     echo ""
     echo "🔐 60_secrets:"
     if test -d ~/.J.4.R.V.1.5/60_secrets
-        set perms (stat -c %a ~/.J.4.R.V.1.5/60_secrets)
-        if test "$perms" = "700"
+        set permissions (stat -c %a ~/.J.4.R.V.1.5/60_secrets)
+        if test "$permissions" = "700"
             echo "  ✅ Permissões corretas (700)"
         else
-            echo "  ❌ Permissões incorretas ($perms)"
+            echo "  ❌ Permissões incorretas ($permissions)"
         end
     else
         echo "  ⚠️ Não encontrado"
@@ -99,8 +99,8 @@ end
 
 function j4tree-simple
     echo "📁 ~/.J.4.R.V.1.5/"
-    for dir in (ls -d ~/.J.4.R.V.1.5/*/)
-        echo "├── "(basename $dir)"/"
+    for directory in (ls -d ~/.J.4.R.V.1.5/*/)
+        echo "├── "(basename $directory)"/"
     end
 end
 
@@ -129,8 +129,8 @@ end
 function j4env
     if test -f ~/.J.4.R.V.1.5/60_secrets/.env
         echo "📋 Carregando variáveis de ambiente..."
-        for line in (grep -v '^#' ~/.J.4.R.V.1.5/60_secrets/.env | grep '=')
-            set -gx (echo $line | cut -d'=' -f1) (echo $line | cut -d'=' -f2-)
+        for env_line in (grep -v '^#' ~/.J.4.R.V.1.5/60_secrets/.env | grep '=')
+            set -gx (echo $env_line | cut -d'=' -f1) (echo $env_line | cut -d'=' -f2-)
         end
         echo "✅ Variáveis carregadas"
     else
